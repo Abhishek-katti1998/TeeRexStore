@@ -64,6 +64,9 @@ position: fixed;
  width: 100%;
  background-color: #fff;
     }
+.secondary-logo-text{
+    display: none;
+}
     .close-btn--container {
             display: block;
             height: auto;
