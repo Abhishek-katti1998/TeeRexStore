@@ -1,0 +1,44 @@
+
+/* GENERIC */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 62.5%;
+}
+
+body {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 1.4rem;
+    background-color: #fff;
+}
+
+.grid.hide{
+    display: none;
+}
+.section-filter.hide{
+    display: none;
+}
+
+.container {
+    margin: 0 10rem;
+}
+
+.grid {
+    display: grid;
+}
+
+.grid-2--cols {
+    grid-template-columns: 30fr 70fr;
+    gap: 2.4rem;
+}
+
+.grid-3--cols {
+    grid-template-columns: repeat(3, 1fr);
+    grid-column-gap: 1.2rem;
+    grid-row-gap:6.4rem;
+}
+
