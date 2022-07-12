@@ -12,7 +12,7 @@ import { calcCartTotal } from "../helper";
 import {
   navigateToProductPage,
   navigateToCheckout,
-  deBounceFunc,
+  deBounceFunc
 } from "../helper";
 /////////////////////////////////////////////////////
 
@@ -103,6 +103,7 @@ const addToCartHandler = (e) => {
   btnView.render(state);
 };
 
+
 //delete cart item handler from precheckoutCart view
 const deleteCartItemHandler = (event) => {
   if (event.target.textContent === "Delete") {
@@ -113,7 +114,7 @@ const deleteCartItemHandler = (event) => {
     calcCartTotal(state, state.cart);
     cartPreCheckout.render(state.cart);
   }
-};
+}
 
 // cart click handler(navigate to pre checkout page)
 const cartBtnClickHandler = (e) => {
@@ -125,26 +126,69 @@ const cartBtnClickHandler = (e) => {
   cartPreCheckout.addToCartHandlerRender(addToCartHandler);
   cartPreCheckout.deleteCartItemHandlerRender(deleteCartItemHandler);
 };
+//filter helper
+const findItemfromFilter=(filterName,genre)=>{
+  if(state.filter.find(e=>e[genre]===filterName)){
+    let temp=state.filter.filter(e=>e[genre]!==filterName);
+    state.filter=temp
+  }
+  else{
+    state.filter.push({[genre]:filterName})
+  }
+}
+// ///////////////////
 
 //filter handler
 const filterHandler = (e) => {
-  if (!state.filter.has(e.target.value)) {
-    state.filter.set(e.target.value, 1);
-  } else {
-    state.filter.delete(e.target.value);
+  let filterName=e.target.value;
+  if(filterName==='Red'||filterName==='Blue' || filterName==='Green'){
+    findItemfromFilter(filterName,"color")
   }
-
-  let filterCriteria = Array.from(state.filter.keys());
+  if(filterName==='Men'||filterName==='Women' ){
+  
+    findItemfromFilter(filterName,"gender")
+  }
+  if(filterName==='Polo'||filterName==='Hoodie' || filterName==='Basic' ){ 
+    findItemfromFilter(filterName,"type",state)
+  }
+  if(filterName==='0-₹250' || filterName==='₹251-₹450' || filterName==='₹450'){
+   findItemfromFilter(filterName,"price")
+  }
+  let curFilter=state.filter[state.filter.length-1];
+  let prevFilter=state.filter.length>1?state.filter[state.filter.length-2]:null;
+  let filterCriteria = state.filter.map(e=>{
+    if(Object.keys(e).includes('color') 
+    || Object.keys(e).includes('type') 
+    ||Object.keys(e).includes('price')
+    ||Object.keys(e).includes('gender')
+    ){
+      return Object.values(e)[0]
+    }
+  })
   let tempFilterdData = [];
-  const filterToApply =
-    state.searchFilterData.length > 0 ? state.searchFilterData : state.data;
-  for (let i = 0; i < filterCriteria.length; i++) {
+  let filterToApply=state.searchFilterData.length > 0 ? state.searchFilterData
+               :(prevFilter && state.filterData.length>0  && (Object.keys(curFilter)[0]!==Object.keys(prevFilter)[0]) 
+                ? state.filterData:state.data);
+//if the applied filters are of the same genre
+ if(prevFilter && Object.keys(curFilter)[0]===Object.keys(prevFilter)[0]){
+  for(let i=0;i<filterCriteria.length;i++){
     for (let j = 0; j < filterToApply.length; j++) {
       if (Object.values(filterToApply[j]).includes(filterCriteria[i])) {
         tempFilterdData.push(filterToApply[j]);
       }
     }
+ }
+ }
+ //if the applied filters are of different genre
+ else {
+  if(curFilter){
+    for (let j = 0; j < filterToApply.length; j++) {
+      if (Object.values(filterToApply[j]).includes(Object.values(curFilter)[0])) {
+        tempFilterdData.push(filterToApply[j]);
+      }
+    }
   }
+ }
 
   if (filterCriteria.includes("0-₹250")) {
     let filterByPrice = filterToApply.filter((e) => e.price <= 250);
@@ -160,14 +204,15 @@ const filterHandler = (e) => {
     let filterByPrice = filterToApply.filter((e) => e.price > 450);
     tempFilterdData = [...tempFilterdData, ...filterByPrice];
   }
-  state.filterData = tempFilterdData;
 
+  state.filterData = tempFilterdData;
+   //reset to original state if there are no filters
+    if (state.filterData.length === 0) {
+      btnView.render();
+      return;
+    }
   filterView.render(state.filterData);
-  //reset to original state if there are no filters
-  if (state.filter.size === 0) {
-    btnView.render();
-    return;
-  }
+
 };
 //mobile filter btn click handler
 const filterBtnClickHandler = () => {
@@ -188,7 +233,7 @@ const searchIpHandler = (event) => {
   state.queryString = event.target.value;
   deBounceFunc(event, state, searchView);
 };
-searchView;
+// searchView;
 init().then((el) => {
   const { data } = state;
   if (data.length > 0) {

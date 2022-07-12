@@ -4,7 +4,7 @@ export const state = {
   cart: [],
   cartTotal: 0,
   increment: true,
-  filter: new Map(),
+  filter: [],
   filterData: [],
   searchFilterData: [],
   preCheckoutPageActive: false,
